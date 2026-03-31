@@ -1,5 +1,5 @@
 from telegram import Update
-from telegram.ext import CommandHandler, ContextTypes
+from telegram.ext import MessageHandler, CommandHandler, ContextTypes, filters
 import google.generativeai as genai
 
 from config import GEMINI_API_KEY, MODEL_NAME
@@ -8,23 +8,31 @@ genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel(MODEL_NAME)
 
 async def teacher_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not context.args:
-        await update.message.reply_text(
-            "👨‍🏫 AI Ustoz\n\n"
-            "Mavzuni shu formatda yozing:\n"
-            "/teacher Perfekt\n"
-            "/teacher Artikel\n"
-            "/teacher B1 Schreiben"
-        )
+    context.user_data["mode"] = "teacher"
+    await update.message.reply_text(
+        "👨‍🏫 AI Ustoz rejimi yoqildi.\n\n"
+        "Mavzuni yozing:\n"
+        "- Perfekt\n"
+        "- Artikel\n"
+        "- B1 Schreiben\n\n"
+        "Chiqish uchun: /start"
+    )
+
+async def teacher_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if context.user_data.get("mode") != "teacher":
         return
 
-    topic = " ".join(context.args)
+    text = update.message.text
+
+    if text == "👨‍🏫 AI Ustoz":
+        await teacher_command(update, context)
+        return
 
     prompt = f"""
 Sen nemis tili ustozisan.
 
 Foydalanuvchi mavzusi:
-{topic}
+{text}
 
 Quyidagicha javob ber:
 1. Mavzuni oddiy o‘zbek tilida tushuntir
@@ -39,3 +47,5 @@ Quyidagicha javob ber:
 
 def register_teacher_handlers(app):
     app.add_handler(CommandHandler("teacher", teacher_command))
+    app.add_handler(MessageHandler(filters.Regex("^👨‍🏫 AI Ustoz$"), teacher_command))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, teacher_text))

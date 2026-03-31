@@ -10,7 +10,7 @@ model = genai.GenerativeModel(MODEL_NAME)
 
 main_menu = ReplyKeyboardMarkup(
     [
-        [KeyboardButton("📚 Aufgabe tanlash")],
+        [KeyboardButton("📚 Aufgabe tanlash"), KeyboardButton("👨‍🏫 AI Ustoz")],
         [KeyboardButton("📸 Rasm yuborish"), KeyboardButton("✍️ Matn yuborish")]
     ],
     resize_keyboard=True
