@@ -1,0 +1,15 @@
+[1mdiff --git a/schreiben.py b/schreiben.py[m
+[1mindex 90713aa..cbdcbef 100644[m
+[1m--- a/schreiben.py[m
+[1m+++ b/schreiben.py[m
+[36m@@ -45,7 +45,9 @@[m [mVazifa:[m
+    - Stil: /4[m
+    - Grammatik/Wortschatz: /6[m
+    - Aufbau: /2[m
+[31m-   - Wortzahl: /2[m
+[32m+[m[32m   - Wortzahl: /2git add .[m
+[32m+[m[32mgit commit -m "rewrite schreiben.py correctly"[m
+[32m+[m[32mgit push[m
+ 9. Jami ball: /20[m
+ [m
+ Javobni aniq va tartibli qil.[m
