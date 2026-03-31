@@ -90,7 +90,25 @@ async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # teacher.py ishlashi uchun
     if context.user_data.get("mode") == "teacher":
-        return
+    try:
+        await update.message.reply_text("Ustoz javob bermoqda...")
+
+        response = model.generate_content(f"""
+Sen nemis tili ustozisan.
+
+Foydalanuvchi savoli:
+{text}
+
+Oddiy, tushunarli qilib tushuntir.
+Misollar bilan tushuntir.
+""")
+
+        await update.message.reply_text(response.text)
+
+    except Exception as e:
+        await update.message.reply_text(f"Xatolik:\n{e}")
+
+    return
 
     if "Aufgabe" in text:
         await show_tasks(update, context)
