@@ -1,3 +1,5 @@
+from telegram import Update
+from telegram.ext import ContextTypes
 async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if "task" not in context.user_data:
         await update.message.reply_text("Avval Aufgabe tanlang")
