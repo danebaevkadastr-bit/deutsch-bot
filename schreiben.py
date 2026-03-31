@@ -88,110 +88,14 @@ async def choose_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
 
+    # teacher.py ishlashi uchun
     if context.user_data.get("mode") == "teacher":
         return
 
-    if text == "📚 Aufgabe tanlash":
-        await show_tasks(update, context)
-        return
-
-    if text == "👨‍🏫 AI Ustoz":
-        context.user_data["mode"] = "teacher"
-        await update.message.reply_text(
-            "👨‍🏫 AI Ustoz\n\nQaysi mavzuda yordam kerak?\nMasalan: Perfekt, Artikel, B1 Schreiben"
-        )
-        return
-
-    if text == "✍️ Matn yuborish":
-        if "task" not in context.user_data:
-            await update.message.reply_text("Avval Aufgabe tanlang")
-            return
-
-        current_task = context.user_data.get("task_name", "Noma’lum Aufgabe")
-        await update.message.reply_text(
-            f"📌 Tanlangan: {current_task}\n\nEndi matningizni yuboring."
-        )
-        return
-
-    if text == "📸 Rasm yuborish":
-        if "task" not in context.user_data:
-            await update.message.reply_text("Avval Aufgabe tanlang")
-            return
-
-        current_task = context.user_data.get("task_name", "Noma’lum Aufgabe")
-        await update.message.reply_text(
-            f"📌 Tanlangan: {current_task}\n\nEndi rasm yuboring."
-        )
-        return
-
-    if "task" not in context.user_data:
-        await update.message.reply_text("Avval Aufgabe tanlang")
-        return
-
-    try:
-        task = TASKS[context.user_data["task"]]
-        current_task = context.user_data.get("task_name", "Noma’lum Aufgabe")
-
-        await update.message.reply_text(
-            f"📌 Tanlangan: {current_task}\n\nTekshiryapman..."
-        )
-
-        prompt = f"""
-Sen nemis tili Schreiben imtihon tekshiruvchisisan.
-
-Tanlangan Aufgabe:
-{task['task']}
-
-Majburiy punktlar:
-- {task['points'][0]}
-- {task['points'][1]}
-- {task['points'][2]}
-
-Talablar:
-- Kamida {task['min_words']} ta so‘z bo‘lsin
-- Stil: {task['style']}
-
-Foydalanuvchi matni:
-{text}
-
-Quyidagicha tekshir:
-1. So‘zlar soni
-2. So‘zlar soni yetarlimi
-3. Har bir punkt bajarilganmi
-4. Stil to‘g‘rimi
-5. Grammatik xatolar
-6. To‘g‘ri variant
-7. Ball qo‘y:
-   - Inhalt: /6
-   - Stil: /4
-   - Grammatik/Wortschatz: /6
-   - Aufbau: /2
-   - Wortzahl: /2
-8. Jami ball: /20
-
-Javobni aniq, tartibli va tushunarli qil.
-"""
-
-        response = model.generate_content(prompt)
-        await update.message.reply_text(response.text)
-
-    except Exception as e:
-        await update.message.reply_text(f"Matn tekshirishda xatolik:\n{e}")
-
-
-async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = update.message.text
-
-    # teacher mode bo‘lsa, teacher.py ishlasin
-    if context.user_data.get("mode") == "teacher":
-        return
-
-    # 📚 Aufgabe tanlash
     if "Aufgabe" in text:
         await show_tasks(update, context)
         return
 
-    # 👨‍🏫 AI Ustoz
     if "Ustoz" in text:
         context.user_data["mode"] = "teacher"
         await update.message.reply_text(
@@ -199,7 +103,6 @@ async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    # ✍️ Matn yuborish
     if "Matn" in text:
         if "task" not in context.user_data:
             await update.message.reply_text("Avval Aufgabe tanlang")
@@ -211,7 +114,6 @@ async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    # 📸 Rasm yuborish
     if "Rasm" in text:
         if "task" not in context.user_data:
             await update.message.reply_text("Avval Aufgabe tanlang")
@@ -223,7 +125,6 @@ async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    # Oddiy matn yuborilgan bo‘lsa, Aufgabe tanlangan bo‘lishi kerak
     if "task" not in context.user_data:
         await update.message.reply_text("Avval Aufgabe tanlang")
         return
@@ -277,6 +178,69 @@ Javobni aniq, tartibli va tushunarli qil.
 
     except Exception as e:
         await update.message.reply_text(f"Matn tekshirishda xatolik:\n{e}")
+
+
+async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if "task" not in context.user_data:
+        await update.message.reply_text("Avval Aufgabe tanlang")
+        return
+
+    try:
+        task = TASKS[context.user_data["task"]]
+        current_task = context.user_data.get("task_name", "Noma’lum Aufgabe")
+
+        await update.message.reply_text(
+            f"📌 Tanlangan: {current_task}\n\nRasm tekshiryapman..."
+        )
+
+        photo = update.message.photo[-1]
+        file = await photo.get_file()
+        await file.download_to_drive("image.jpg")
+
+        with open("image.jpg", "rb") as f:
+            img = f.read()
+
+        prompt = f"""
+Sen nemis tili Schreiben imtihon tekshiruvchisisan.
+
+Tanlangan Aufgabe:
+{task['task']}
+
+Majburiy punktlar:
+- {task['points'][0]}
+- {task['points'][1]}
+- {task['points'][2]}
+
+Talablar:
+- Kamida {task['min_words']} ta so‘z bo‘lsin
+- Stil: {task['style']}
+
+Vazifa:
+1. Rasmdagi nemischa matnni o‘qib chiq
+2. Matnni to‘liq yozib ber
+3. So‘zlar sonini hisobla
+4. Har bir punkt bajarilganmi tekshir
+5. Stilni tekshir
+6. Grammatik xatolarni top
+7. To‘g‘ri variantni yoz
+8. Ball qo‘y:
+   - Inhalt: /6
+   - Stil: /4
+   - Grammatik/Wortschatz: /6
+   - Aufbau: /2
+   - Wortzahl: /2
+9. Jami ball: /20
+
+Javobni aniq va tartibli qil.
+"""
+
+        response = model.generate_content(
+            [prompt, {"mime_type": "image/jpeg", "data": img}]
+        )
+        await update.message.reply_text(response.text)
+
+    except Exception as e:
+        await update.message.reply_text(f"Rasm xatoligi:\n{e}")
 
 
 def register_schreiben_handlers(app):
