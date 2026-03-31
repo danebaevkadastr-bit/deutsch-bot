@@ -60,3 +60,8 @@ Javobni aniq va tartibli qil.
 
     except Exception as e:
         await update.message.reply_text(f"Rasm xatoligi:\n{e}")
+        def register_schreiben_handlers(app):
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CallbackQueryHandler(choose_task, pattern=r"^task_"))
+    app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, text_router))
