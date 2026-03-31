@@ -9,4 +9,4 @@ register_schreiben_handlers(app)
 register_teacher_handlers(app)
 
 print("Bot ishga tushdi...")
-app.run_polling()git push --set-upstream origin main
+app.run_polling()
