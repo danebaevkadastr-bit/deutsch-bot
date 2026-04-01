@@ -44,7 +44,7 @@ genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel(MODEL_NAME)
 
 # Admin ID (o'z ID ingizni qo'ying!)
-ADMIN_IDS = [123456789]  # 👈 O'ZGARTIRING!
+ADMIN_IDS = [846543597]  # 👈 O'ZGARTIRING!
 
 # Asosiy menyu
 main_menu = ReplyKeyboardMarkup(
