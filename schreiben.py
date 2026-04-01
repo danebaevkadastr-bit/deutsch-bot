@@ -285,7 +285,7 @@ async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await loading_msg.delete()
             await update.message.reply_text(response.text, parse_mode="Markdown")
 
-            log_task_check(user_id, context.user_data["task"], len(text))
+            #log_task_check(user_id, context.user_data["task"], len(text))
             logger.info(
                 f"Task {context.user_data['task']} checked for user {user_id} ({username})"
             )
