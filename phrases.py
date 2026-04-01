@@ -2,7 +2,7 @@ from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
 USEFUL_PHRASES = {
     "formell": {
-        "title": "📧 **Formell maktublar uchun iboralar**",
+        "title": "📧 **Formell xatlar ushın sózler**",
         "phrases": [
             "Sehr geehrte Frau ... / Sehr geehrter Herr ...",
             "ich möchte mich bei Ihnen erkundigen, ...",
@@ -12,7 +12,7 @@ USEFUL_PHRASES = {
         ]
     },
     "informell": {
-        "title": "💬 **Informell maktublar uchun iboralar**",
+        "title": "💬 **Informell xatlar ushın sózler**",
         "phrases": [
             "Liebe ... / Lieber ...",
             "wie geht es dir?",
@@ -22,7 +22,7 @@ USEFUL_PHRASES = {
         ]
     },
     "einleitung": {
-        "title": "✍️ **Kirish qismi uchun iboralar**",
+        "title": "✍️ **Kirisiw ushın sózler**",
         "phrases": [
             "ich schreibe dir, weil ...",
             "der Grund für mein Schreiben ist ...",
@@ -30,7 +30,7 @@ USEFUL_PHRASES = {
         ]
     },
     "abschluss": {
-        "title": "🔚 **Yakun qismi uchun iboralar**",
+        "title": "🔚 **Juwmaqlawshı bólim ushın sózler**",
         "phrases": [
             "ich freue mich auf Ihre baldige Antwort.",
             "vielen Dank im Voraus.",
@@ -50,7 +50,7 @@ async def show_useful_phrases(update, context):
         [InlineKeyboardButton("🏠 Bosh menyu", callback_data="back_to_menu")]
     ]
     await update.message.reply_text(
-        "💬 **Foydali nemis iboralari**\n\nQaysi turdagi iboralarni ko'rmoqchisiz?",
+        "💬 **Paydalı nemis sózleri**\n\nQaysi turdagi iboralarni ko'rmoqchisiz?",
         reply_markup=InlineKeyboardMarkup(keyboard),
         parse_mode="Markdown"
     )
@@ -81,12 +81,12 @@ async def phrases_callback_handler(update, context):
         keyboard = [
             [InlineKeyboardButton("📧 Formell", callback_data="phrases_formell")],
             [InlineKeyboardButton("💬 Informell", callback_data="phrases_informell")],
-            [InlineKeyboardButton("✍️ Kirish qismi", callback_data="phrases_einleitung")],
-            [InlineKeyboardButton("🔚 Yakun qismi", callback_data="phrases_abschluss")],
-            [InlineKeyboardButton("🏠 Bosh menyu", callback_data="back_to_menu")]
+            [InlineKeyboardButton("✍️ Kirisiw bólimi", callback_data="phrases_einleitung")],
+            [InlineKeyboardButton("🔚 Juwmaqlaw bólimi", callback_data="phrases_abschluss")],
+            [InlineKeyboardButton("🏠 Bosh bet", callback_data="back_to_menu")]
         ]
         await query.message.edit_text(
-            "💬 **Foydali nemis iboralari**\n\nQaysi turdagi iboralarni ko'rmoqchisiz?",
+            "💬 **Paydalı nemis sózleri**\n\nQanday túrdegi sózlerdi kórgińiz keledi??",
             reply_markup=InlineKeyboardMarkup(keyboard),
             parse_mode="Markdown"
         )

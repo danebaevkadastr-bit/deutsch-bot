@@ -49,7 +49,7 @@ ADMIN_IDS = [123456789]  # 👈 O'ZGARTIRING!
 # Asosiy menyu
 main_menu = ReplyKeyboardMarkup(
     [
-        [KeyboardButton("📚 Aufgabe tanlash"), KeyboardButton("👨‍🏫 AI Ustoz")],
+        [KeyboardButton("📚 Aufgabe tańlaw"), KeyboardButton("👨‍🏫 AI Ustaz")],
         [KeyboardButton("💬 Foydali iboralar")],
     ],
     resize_keyboard=True,
@@ -74,18 +74,18 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         await update.message.reply_text(
             "🇩🇪 **Hallo! Willkommen!** 🇩🇪\n\n"
-            "Men nemis tilini o'rganuvchilar uchun yordamchi botman.\n\n"
-            "📝 **Nima qila olaman?**\n"
-            "• B1 Schreiben Aufgabe-larini tekshirish\n"
-            "• AI Ustoz sifatida nemis tili savollariga javob berish\n"
-            "• Foydali nemis iboralari\n\n"
-            "Kerakli bo'limni tanlang 👇",
+            "Men nemis tilin úyreniwshiler ushın járdemshi botpan.\n\n"
+            "📝 **Ne qıla alaman?**\n"
+            "• Schreiben Aufgabe-lardı tekseriw\n"
+            "• AI Ustaz sipatında nemis tili sorawlarına juwap beriw\n"
+            "• Paydalı nemis sózleri\n\n"
+            "Kerekli bólimdi tańlań 👇",
             reply_markup=main_menu,
             parse_mode="Markdown",
         )
     except Exception as e:
         log_error(logger, e, user_id, "Start")
-        await update.message.reply_text("❌ Xatolik yuz berdi.")
+        await update.message.reply_text("❌ Qátelik júz berdi.")
 
 
 # ============================================
@@ -114,7 +114,7 @@ def build_buttons(current_page=0, tasks_per_page=10):
     nav_buttons = []
     if current_page > 0:
         nav_buttons.append(
-            InlineKeyboardButton("◀️ Oldingi", callback_data=f"page_{current_page - 1}")
+            InlineKeyboardButton("◀️ Aldınǵı", callback_data=f"page_{current_page - 1}")
         )
     if current_page < total_pages - 1:
         nav_buttons.append(
@@ -124,7 +124,7 @@ def build_buttons(current_page=0, tasks_per_page=10):
     if nav_buttons:
         keyboard.append(nav_buttons)
 
-    keyboard.append([InlineKeyboardButton("🏠 Bosh menyu", callback_data="back_to_menu")])
+    keyboard.append([InlineKeyboardButton("🏠 Bas bet", callback_data="back_to_menu")])
 
     return InlineKeyboardMarkup(keyboard)
 
@@ -137,14 +137,14 @@ async def show_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data["current_page"] = 0
 
         await update.message.reply_text(
-            "📚 **Aufgabe tanlang** (1-20)\n\nQuyidagi tugmalardan birini bosing:",
+            "📚 **Aufgabe tanlań** (1-20)\n\Tómendegi túymelerden birin basıń:",
             reply_markup=build_buttons(0),
             parse_mode="Markdown",
         )
         logger.info(f"Tasks shown to user {user_id}")
     except Exception as e:
         log_error(logger, e, user_id, "Show tasks")
-        await update.message.reply_text("❌ Aufgabe-larni yuklashda xatolik yuz berdi.")
+        await update.message.reply_text("❌ Aufgabe-larni yuklashda qátelik júz berdi.")
 
 
 async def handle_pagination(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -159,7 +159,7 @@ async def handle_pagination(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if data == "back_to_menu":
             await query.message.delete()
             await query.message.reply_text(
-                "🏠 **Asosiy menyu**\n\nKerakli bo'limni tanlang:",
+                "🏠 **Asosiy menyu**\n\nKerekli bólimdi tańlań:",
                 reply_markup=main_menu,
                 parse_mode="Markdown",
             )
@@ -176,11 +176,11 @@ async def handle_pagination(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
     except Exception as e:
         log_error(logger, e, user_id, f"Pagination: {data}")
-        await query.message.reply_text("❌ Xatolik yuz berdi.")
+        await query.message.reply_text("❌ Xatolik júz berdi.")
 
 
 async def choose_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Aufgabe tanlash"""
+    """Aufgabe tańlaw"""
     query = update.callback_query
     user_id = update.effective_user.id
     username = update.effective_user.username
@@ -205,7 +205,7 @@ async def choose_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"📏 **So'zlar soni:** Kamida {task['min_words']} so'z\n"
             f"✍️ **Stil:** {task['style'].upper()}\n\n"
             f"---\n"
-            f"✏️ **Endi matn yozing** yoki 📸 **rasm yuboring**.\n"
+            f"✏️ **Endi tekst yozing** yoki 📸 **súwret jiberiń**.\n"
             f"Men sizning yozganingizni tekshirib, baholayman."
         )
 
@@ -214,14 +214,14 @@ async def choose_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     except Exception as e:
         log_error(logger, e, user_id, f"Choose task: {query.data if query else 'None'}")
-        await query.message.reply_text("❌ Aufgabe tanlashda xatolik yuz berdi.")
+        await query.message.reply_text("❌ Aufgabe tańlawda qátelik júz berdi.")
 
 
 # ============================================
-# MATN VA RASM QAYTA ISHLASH
+# tekst VA RASM QAYTA ISHLASH
 # ============================================
 async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Matnli xabarlarni qayta ishlash"""
+    """tekstli xabarlarni qayta ishlash"""
     user_id = update.effective_user.id
     username = update.effective_user.username
     text = (update.message.text or "").strip()
@@ -229,7 +229,7 @@ async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
     update_user_request(user_id)
 
     try:
-        # --- AI USTOZ REJIMI ---
+        # --- AI Ustaz REJIMI ---
         if context.user_data.get("mode") == "teacher":
             start_time = time.time()
             await teacher_respond(update, context)
@@ -237,13 +237,13 @@ async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
             log_teacher_request(user_id, len(text), response_time)
             return
 
-        # --- AUFGABE TANLASH TUGMASI ---
+        # --- AUFGABE tańlaw TUGMASI ---
         if "Aufgabe" in text:
             await show_tasks(update, context)
             return
 
-        # --- AI USTOZ TUGMASI ---
-        if "Ustoz" in text:
+        # --- AI Ustaz TUGMASI ---
+        if "Ustaz" in text:
             await teacher_mode_start(update, context)
             return
 
@@ -252,12 +252,12 @@ async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await show_useful_phrases(update, context)
             return
 
-        # --- MATN TEKSHIRISH ---
+        # --- tekst TEKSHIRISH ---
         if "task" not in context.user_data:
             await update.message.reply_text(
-                "⚠️ **Avval Aufgabe tanlang!**\n\n"
-                "📚 **Aufgabe tanlash** tugmasini bosing yoki\n"
-                "👨‍🏫 **AI Ustoz** rejimidan foydalaning.",
+                "⚠️ **Dástlep Aufgabe tu`ymesin basıń!**\n\n"
+                "📚 **Aufgabe tańlaw** túymesin yáki\n"
+                "👨‍🏫 **AI Ustaz** rejiminen paydalanıń.",
                 parse_mode="Markdown",
             )
             return
@@ -267,9 +267,9 @@ async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
             current_task = context.user_data.get("task_name", "Noma'lum Aufgabe")
 
             loading_msg = await update.message.reply_text(
-                f"📌 **Tanlangan:** {current_task}\n\n"
-                f"🔍 Matn tekshirilmoqda...\n"
-                f"⏳ Iltimos, kuting (10-20 soniya)",
+                f"📌 **Tańlanǵan:** {current_task}\n\n"
+                f"🔍 Text tekserilmekte...\n"
+                f"⏳ Iltimas, kútiń (10-20 sekund)",
                 parse_mode="Markdown",
             )
 
@@ -293,29 +293,29 @@ async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except asyncio.TimeoutError:
             await loading_msg.delete()
             await update.message.reply_text(
-                "⏰ **Tekshirish juda uzoq davom etdi.**\n\n"
-                "Iltimos, matnni qisqartirib yoki qayta yuboring.",
+                "⏰ **Tekseriw júdá uzaq dawam etti.**\n\n"
+                "Iltimas, tekstti qısqartıp yaki qayta jiberiń.",
                 parse_mode="Markdown",
             )
         except Exception as e:
             log_error(logger, e, user_id, f"Task checking")
             await loading_msg.delete()
             await update.message.reply_text(
-                "❌ **Matnni tekshirishda xatolik yuz berdi.**\n\n"
-                "Iltimos, qayta urinib ko'ring.",
+                "❌ **tekstni tekshirishda qátelik júz berdi.**\n\n"
+                "Iltimas, qayta urınıp ko'ring.",
                 parse_mode="Markdown",
             )
 
     except Exception as e:
         log_error(logger, e, user_id, f"Text router")
         await update.message.reply_text(
-            "❌ **Kutilmagan xatolik.**\n\nIltimos, /start buyrug'ini bosing.",
+            "❌ **Kutilmagan qátelik.**\n\nIltimas, /start buyrug'ini bosing.",
             parse_mode="Markdown",
         )
 
 
 async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Rasm yuborilganda - rasmdagi matnni o'qib tekshirish"""
+    """Rasm yuborilganda - súwretdagi tekstni o'qib tekshirish"""
     user_id = update.effective_user.id
     username = update.effective_user.username
 
@@ -324,15 +324,15 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         if context.user_data.get("mode") == "teacher":
             await update.message.reply_text(
-                "👨‍🏫 **AI Ustoz rejimidasiz**\n\n"
-                "Rasm emas, matn ko'rinishida savolingizni yozing.",
+                "👨‍🏫 **AI Ustaz rejimidasiz**\n\n"
+                "Rasm emas, tekst ko'rinishida savolingizni yozing.",
                 parse_mode="Markdown",
             )
             return
 
         if "task" not in context.user_data:
             await update.message.reply_text(
-                "⚠️ **Avval Aufgabe tanlang!**\n\n📚 Aufgabe tanlash tugmasini bosing.",
+                "⚠️ **Avval Aufgabe tanlang!**\n\n📚 Aufgabe tańlaw tugmasini bosing.",
                 parse_mode="Markdown",
             )
             return
@@ -343,8 +343,8 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             loading_msg = await update.message.reply_text(
                 f"📌 **Tanlangan:** {current_task}\n\n"
-                f"🖼️ Rasm tekshirilmoqda...\n"
-                f"⏳ Iltimos, kuting (20-30 soniya)",
+                f"🖼️ Rasm tekserilmekte...\n"
+                f"⏳ Iltimas, kuting (20-30 soniya)",
                 parse_mode="Markdown",
             )
 
@@ -381,21 +381,21 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except asyncio.TimeoutError:
             await loading_msg.delete()
             await update.message.reply_text(
-                "⏰ **Rasmni tekshirish juda uzoq davom etdi.**\n\n"
-                "Iltimos, matnni yozma ravishda yuboring.",
+                "⏰ **Súwretti Tekseriw júdá uzaq dawam etti.**\n\n"
+                "Iltimas, tekstni jazba ráwishte jiberiń.",
                 parse_mode="Markdown",
             )
         except Exception as e:
             log_error(logger, e, user_id, f"Photo checking")
             await loading_msg.delete()
             await update.message.reply_text(
-                "❌ **Rasmni tekshirishda xatolik.**\n\nIltimos, matnni yozma yuboring.",
+                "❌ **Súwretti tekshirishda qátelik.**\n\nIltimas, tekstni jazba jiberiń.",
                 parse_mode="Markdown",
             )
 
     except Exception as e:
         log_error(logger, e, user_id, "Handle photo")
-        await update.message.reply_text("❌ Xatolik yuz berdi.")
+        await update.message.reply_text("❌ Xatolik júz berdi.")
 
 
 # ============================================
@@ -431,7 +431,7 @@ async def my_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"🕐 **Oxirgi kelgan:** {stats['last_seen'][:10]}\n\n"
         f"📝 **Jami so'rovlar:** {stats['total_requests']}\n"
         f"✅ **Task tekshirishlar:** {stats['task_checks']}\n"
-        f"👨‍🏫 **AI Ustoz so'rovlari:** {stats['teacher_requests']}\n"
+        f"👨‍🏫 **AI Ustaz so'rovlari:** {stats['teacher_requests']}\n"
     )
 
     if stats["top_tasks"]:
@@ -454,7 +454,7 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if not message_text:
         await update.message.reply_text(
-            "❌ Xabar matnini yozing!\n\nMasalan: /broadcast Salom hammaga!"
+            "❌ Xabar tekstini yozing!\n\nMasalan: /broadcast Salom hammaga!"
         )
         return
 

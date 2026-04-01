@@ -20,15 +20,15 @@ async def teacher_mode_start(update: Update, context: ContextTypes.DEFAULT_TYPE)
     try:
         context.user_data["mode"] = "teacher"
         await update.message.reply_text(
-            "👨‍🏫 **AI Ustoz rejimi**\n\n"
-            "🇩🇪 Nemis tili bo'yicha savollaringizga javob beraman.\n\n"
+            "👨‍🏫 **AI Ustaz rejimi**\n\n"
+            "🇩🇪 Nemis tili boyınsha sorawlarıńızǵa juwap beremen.\n\n"
             "✏️ **Savolingizni yozing:**",
             parse_mode="Markdown"
         )
         logger.info(f"Teacher mode: {user_id} ({username})")
     except Exception as e:
         log_error(logger, e, user_id, "Teacher mode start")
-        await update.message.reply_text("❌ Xatolik yuz berdi.")
+        await update.message.reply_text("❌ Qátelik júz berdi.")
 
 
 async def teacher_respond(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -38,7 +38,7 @@ async def teacher_respond(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     try:
         loading_msg = await update.message.reply_text(
-            "👨‍🏫 **Ustoz javob bermoqda...**\n⏳ Iltimos, kuting...",
+            "👨‍🏫 **Ustaz juwap beriwde...**\n⏳ Iltimas, kútiń...",
             parse_mode="Markdown"
         )
         
@@ -56,11 +56,11 @@ async def teacher_respond(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
     except asyncio.TimeoutError:
         await loading_msg.delete()
-        await update.message.reply_text("⏰ So'rov uzoq davom etdi. Qisqaroq savol yozing.")
+        await update.message.reply_text("⏰ Soraw uzaq waqıt dawam etdi. Qısqaraq soraw jazıń.")
     except Exception as e:
         log_error(logger, e, user_id, "Teacher respond")
         await loading_msg.delete()
-        await update.message.reply_text("❌ Xatolik yuz berdi. Qayta urinib ko'ring.")
+        await update.message.reply_text("❌ Qátelik júz berdi. Qaytadan urınıp kóriń.")
         context.user_data["mode"] = None
 
 
