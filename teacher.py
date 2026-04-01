@@ -1,3 +1,7 @@
+"""
+AI Ustoz moduli - Nemis tili o'qituvchisi
+"""
+
 import asyncio
 from telegram import Update
 from telegram.ext import ContextTypes
@@ -14,31 +18,37 @@ model = genai.GenerativeModel(MODEL_NAME)
 
 
 async def teacher_mode_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """AI Ustoz rejimini ishga tushirish"""
     user_id = update.effective_user.id
     username = update.effective_user.username
     
     try:
         context.user_data["mode"] = "teacher"
+        
         await update.message.reply_text(
-            "👨‍🏫 **AI Ustaz rejimi**\n\n"
-            "🇩🇪 Nemis tili boyınsha sorawlarıńızǵa juwap beremen.\n\n"
-            "✏️ **Savolingizni yozing:**",
+            "👨‍🏫 **AI Ustoz rejimi**\n\n"
+            "🇩🇪 Nemis tili boyinsha sorawlarinizģa juwap beremen.\n\n"
+            "✏️ **Sorawıńızdı jazıń:**",
             parse_mode="Markdown"
         )
+        
         logger.info(f"Teacher mode: {user_id} ({username})")
+        
     except Exception as e:
         log_error(logger, e, user_id, "Teacher mode start")
-        await update.message.reply_text("❌ Qátelik júz berdi.")
+        await update.message.reply_text("❌ Xátelik júz berdi.")
 
 
 async def teacher_respond(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Foydalanuvchi savoliga javob berish"""
     user_id = update.effective_user.id
     username = update.effective_user.username
     question = (update.message.text or "").strip()
     
     try:
         loading_msg = await update.message.reply_text(
-            "👨‍🏫 **Ustaz juwap beriwde...**\n⏳ Iltimas, kútiń...",
+            "👨‍🏫 **Ustaz juwap berip atır...**\n\n"
+            "⏳ Háwir etiń, kútiń...",
             parse_mode="Markdown"
         )
         
@@ -50,17 +60,25 @@ async def teacher_respond(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         
         await loading_msg.delete()
-        await update.message.reply_text(response.text, parse_mode="Markdown")
+        # Markdown parse_mode ni olib tashladik (xatolik ketadi)
+        await update.message.reply_text(response.text)
+        
         logger.info(f"Teacher responded: {user_id} ({username})")
         context.user_data["mode"] = None
         
     except asyncio.TimeoutError:
         await loading_msg.delete()
-        await update.message.reply_text("⏰ Soraw uzaq waqıt dawam etdi. Qısqaraq soraw jazıń.")
+        await update.message.reply_text(
+            "⏰ Soraw juwaplawda kóp waqıt ketti.\n\n"
+            "Sorawıńızdı qısqartırıp qayta jazıń."
+        )
     except Exception as e:
         log_error(logger, e, user_id, "Teacher respond")
         await loading_msg.delete()
-        await update.message.reply_text("❌ Qátelik júz berdi. Qaytadan urınıp kóriń.")
+        await update.message.reply_text(
+            "❌ Xátelik júz berdi.\n\n"
+            "Qayta urınıp kóriń."
+        )
         context.user_data["mode"] = None
 
 
