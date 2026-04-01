@@ -50,7 +50,7 @@ ADMIN_IDS = [846543597]  # 👈 O'ZGARTIRING!
 main_menu = ReplyKeyboardMarkup(
     [
         [KeyboardButton("📚 Aufgabe tańlaw"), KeyboardButton("👨‍🏫 AI Ustaz")],
-        [KeyboardButton("💬 Foydali iboralar")],
+        [KeyboardButton("💬 Foydali sózler")],
     ],
     resize_keyboard=True,
 )
@@ -248,7 +248,7 @@ async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
 
         # --- FOYDALI IBORALAR TUGMASI ---
-        if "Foydali iboralar" in text or "Iboralar" in text:
+        if "Foydali sózler" in text or "Iboralar" in text:
             await show_useful_phrases(update, context)
             return
 
