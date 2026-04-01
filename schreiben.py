@@ -197,16 +197,16 @@ async def choose_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         task_info = (
             f"✅ **{task_num}. Aufgabe**\n\n"
-            f"📝 **Vazifa:**\n{task['task']}\n\n"
-            f"🎯 **Majburiy punktlar:**\n"
+            f"📝 **Wazıypa:**\n{task['task']}\n\n"
+            f"🎯 **Májbúriy punktlar:**\n"
             f"• {task['points'][0]}\n"
             f"• {task['points'][1]}\n"
             f"• {task['points'][2]}\n\n"
-            f"📏 **So'zlar soni:** Kamida {task['min_words']} so'z\n"
+            f"📏 **Sózler sanı:** Keminde {task['min_words']} sóz\n"
             f"✍️ **Stil:** {task['style'].upper()}\n\n"
             f"---\n"
-            f"✏️ **Endi tekst yozing** yoki 📸 **súwret jiberiń**.\n"
-            f"Men sizning yozganingizni tekshirib, baholayman."
+            f"✏️ **Endi tekst jazıń** yáki 📸 **súwret jiberiń**.\n"
+            f"Men siziń jazǵanıńızdı tekserip, baha beremen."
         )
 
         await query.message.reply_text(task_info, parse_mode="Markdown")
@@ -221,7 +221,7 @@ async def choose_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # tekst VA RASM QAYTA ISHLASH
 # ============================================
 async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """tekstli xabarlarni qayta ishlash"""
+    """tekstli xabarlardı qayta islew"""
     user_id = update.effective_user.id
     username = update.effective_user.username
     text = (update.message.text or "").strip()
@@ -325,7 +325,7 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if context.user_data.get("mode") == "teacher":
             await update.message.reply_text(
                 "👨‍🏫 **AI Ustaz rejimidasiz**\n\n"
-                "Rasm emas, tekst ko'rinishida savolingizni yozing.",
+                "Rasm emas, tekst ko'rinishida savolingizni jazıń.",
                 parse_mode="Markdown",
             )
             return
@@ -454,7 +454,7 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if not message_text:
         await update.message.reply_text(
-            "❌ Xabar tekstini yozing!\n\nMasalan: /broadcast Salom hammaga!"
+            "❌ Xabar tekstini jazıń!\n\nMasalan: /broadcast Salom hammaga!"
         )
         return
 
