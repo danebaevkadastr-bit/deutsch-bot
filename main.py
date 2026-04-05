@@ -19,7 +19,7 @@ async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         if update and update.effective_message:
             await update.effective_message.reply_text(
-                "❌ Xatolik yuz berdi. Iltimos, /start buyrug'i bilan qayta urinib ko'ring."
+                "❌ Qátelik júz berdi. Iltimas, /start buyrıǵı menen qayta urınıp kóriń."
             )
     except:
         pass

@@ -36,7 +36,7 @@ Quyidagi 3 bo'limda javob ber:
 - Umumiy izoh: 1-2 gap
 
 🔍 **2. XATOLAR VA TO'G'RILASH**
-(Xatolar bo'lsa yoz, bo'lmasa "Jiddiy xato topilmadi" deb yoz)
+(Xatolar bo'lsa yoz, bo'lmasa "Áhmiyetli xato tawılmadı" deb yoz)
 
 Har bir xato uchun:
 • xato → to'g'risi

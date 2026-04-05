@@ -50,7 +50,7 @@ ADMIN_IDS = [846543597]  # Danebaev_M ID si
 main_menu = ReplyKeyboardMarkup(
     [
         [KeyboardButton("📚 Aufgabe tanlaw"), KeyboardButton("👨‍🏫 AI Ustaz")],
-        [KeyboardButton("💬 Paydalı iboralar")],
+        [KeyboardButton("💬 Paydalı sózler")],
     ],
     resize_keyboard=True,
 )
@@ -74,18 +74,18 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         await update.message.reply_text(
             "🇩🇪 **Hallo! Willkommen!** 🇩🇪\n\n"
-            "Men nemis tilin úyreniwshiler ushın járdemshi botman.\n\n"
-            "📝 **Nima qila alaman?**\n"
+            "Men nemis tilin úyreniwshiler ushın járdemshi botpan.\n\n"
+            "📝 **Ne qıla alaman?**\n"
             "• B1 Schreiben Aufgabe-ların tekseriw\n"
             "• AI Ustaz sıpatında nemis tili sorawlarına juwap beriw\n"
-            "• Paydalı nemis iboraları\n\n"
+            "• Paydalı nemis sózleri\n\n"
             "Kerekli bólimdi tańlań 👇",
             reply_markup=main_menu,
             parse_mode="Markdown",
         )
     except Exception as e:
         log_error(logger, e, user_id, "Start")
-        await update.message.reply_text("❌ Xátelik júz berdi.")
+        await update.message.reply_text("❌ Qátelik júz berdi.")
 
 
 # ============================================
@@ -198,7 +198,7 @@ async def choose_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
         task_info = (
             f"✅ **{task_num}. Aufgabe**\n\n"
             f"📝 **Wazıypa:**\n{task['task']}\n\n"
-            f"🎯 **Májburiy punktler:**\n"
+            f"🎯 **Májbúriy punktler:**\n"
             f"• {task['points'][0]}\n"
             f"• {task['points'][1]}\n"
             f"• {task['points'][2]}\n\n"
@@ -246,7 +246,7 @@ async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
 
         # --- AI USTOZ TUGMASI ---
-        if "Ustaz" in text or "Ustoz" in text:
+        if "Ustaz" in text or "Ustaz" in text:
             await teacher_mode_start(update, context)
             return
 
@@ -272,7 +272,7 @@ async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
             loading_msg = await update.message.reply_text(
                 f"📌 **Tańlanǵan:** {current_task}\n\n"
                 f"🔍 Tekst tekserilmekte...\n"
-                f"⏳ Háwir etiń, kútiń (10-20 sekund)",
+                f"⏳ Iltimas, kútiń (10-20 sekund)",
                 parse_mode="Markdown",
             )
 
@@ -313,7 +313,7 @@ async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         log_error(logger, e, user_id, f"Text router")
         await update.message.reply_text(
-            "❌ **Kutilmegen xátelik.**\n\nIltimos, /start buyrıǵın basıń."
+            "❌ **Kutilmegen qátelik.**\n\nIltimas, /start buyrıǵın basıń."
         )
 
 
@@ -328,7 +328,7 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if context.user_data.get("mode") == "teacher":
             await update.message.reply_text(
                 "👨‍🏫 **AI Ustaz rejimindesiz**\n\n"
-                "Suwret emes, tekst kórinisinde sorawıńızdı jazıń."
+                "Súwret emes, tekst kórinisinde sorawıńızdı jazıń."
             )
             return
 
@@ -344,8 +344,8 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             loading_msg = await update.message.reply_text(
                 f"📌 **Tańlanǵan:** {current_task}\n\n"
-                f"🖼️ Suwret tekserilmekte...\n"
-                f"⏳ Háwir etiń, kútiń (20-30 sekund)"
+                f"🖼️ Súwret tekserilmekte...\n"
+                f"⏳ Iltimas, kútiń (20-30 sekund)"
             )
 
             photo = update.message.photo[-1]
@@ -396,7 +396,7 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     except Exception as e:
         log_error(logger, e, user_id, "Handle photo")
-        await update.message.reply_text("❌ Xátelik júz berdi.")
+        await update.message.reply_text("❌ Qátelik júz berdi.")
 
 
 # ============================================
@@ -407,7 +407,7 @@ async def admin_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
 
     if user_id not in ADMIN_IDS:
-        await update.message.reply_text("❌ Siz admin emassiz!")
+        await update.message.reply_text("❌ Siz admin emessiz!")
         return
 
     stats_text = get_admin_stats_text()

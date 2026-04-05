@@ -1,5 +1,5 @@
 """
-AI Ustoz moduli - Nemis tili o'qituvchisi
+AI Ustaz moduli - Nemis tili oqıtıwshısı
 """
 
 import asyncio
@@ -18,7 +18,7 @@ model = genai.GenerativeModel(MODEL_NAME)
 
 
 async def teacher_mode_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """AI Ustoz rejimini ishga tushirish"""
+    """AI Ustaz rejimin iske túsiriw"""
     user_id = update.effective_user.id
     username = update.effective_user.username
     
@@ -26,8 +26,8 @@ async def teacher_mode_start(update: Update, context: ContextTypes.DEFAULT_TYPE)
         context.user_data["mode"] = "teacher"
         
         await update.message.reply_text(
-            "👨‍🏫 **AI Ustoz rejimi**\n\n"
-            "🇩🇪 Nemis tili boyinsha sorawlarinizģa juwap beremen.\n\n"
+            "👨‍🏫 **AI Ustaz rejimi**\n\n"
+            "🇩🇪 Nemis tili boyınsha sorawlarıńızǵa juwap beremen.\n\n"
             "✏️ **Sorawıńızdı jazıń:**",
             parse_mode="Markdown"
         )
@@ -36,11 +36,11 @@ async def teacher_mode_start(update: Update, context: ContextTypes.DEFAULT_TYPE)
         
     except Exception as e:
         log_error(logger, e, user_id, "Teacher mode start")
-        await update.message.reply_text("❌ Xátelik júz berdi.")
+        await update.message.reply_text("❌ Qátelik júz berdi.")
 
 
 async def teacher_respond(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Foydalanuvchi savoliga javob berish"""
+    """Paydalanıwshınıń sorawına juwap beriw"""
     user_id = update.effective_user.id
     username = update.effective_user.username
     question = (update.message.text or "").strip()
@@ -48,7 +48,7 @@ async def teacher_respond(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         loading_msg = await update.message.reply_text(
             "👨‍🏫 **Ustaz juwap berip atır...**\n\n"
-            "⏳ Háwir etiń, kútiń...",
+            "⏳ Iltitmas, kútiń...",
             parse_mode="Markdown"
         )
         
@@ -76,7 +76,7 @@ async def teacher_respond(update: Update, context: ContextTypes.DEFAULT_TYPE):
         log_error(logger, e, user_id, "Teacher respond")
         await loading_msg.delete()
         await update.message.reply_text(
-            "❌ Xátelik júz berdi.\n\n"
+            "❌ Qátelik júz berdi.\n\n"
             "Qayta urınıp kóriń."
         )
         context.user_data["mode"] = None
