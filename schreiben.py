@@ -110,7 +110,6 @@ def build_buttons(current_page=0, tasks_per_page=10):
     if row:
         keyboard.append(row)
 
-    # Navigatsiya tugmalari
     nav_buttons = []
     if current_page > 0:
         nav_buttons.append(
@@ -154,8 +153,8 @@ async def handle_pagination(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     try:
         await query.answer()
-
         data = query.data
+
         if data == "back_to_menu":
             await query.message.delete()
             await query.message.reply_text(
@@ -175,7 +174,7 @@ async def handle_pagination(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 parse_mode="Markdown",
             )
     except Exception as e:
-        log_error(logger, e, user_id, f"Pagination: {data}")
+        log_error(logger, e, user_id, f"Pagination: {query.data if query else 'None'}")
         await query.message.reply_text("❌ Xátelik júz berdi.")
 
 
@@ -229,7 +228,13 @@ async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
     update_user_request(user_id)
 
     try:
-        # --- AI USTOZ REJIMI ---
+        # --- PAYDALI SÓZLER TUGMASI (MUSTAQIL) ---
+        if "Paydalı sózler" in text:
+            context.user_data["mode"] = None
+            await show_useful_phrases(update, context)
+            return
+
+        # --- AI USTAZ REJIMI ---
         if context.user_data.get("mode") == "teacher":
             start_time = time.time()
             await teacher_respond(update, context)
@@ -240,19 +245,15 @@ async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 logger.error(f"Log teacher error: {e}")
             return
 
-        # --- AUFGABE TANLASH TUGMASI ---
-        if "Aufgabe" in text or "Aufgabe" in text:
+        # --- AUFGABE TANLAW TUGMASI ---
+        if "Aufgabe" in text:
+            context.user_data["mode"] = None
             await show_tasks(update, context)
             return
 
-        # --- AI USTOZ TUGMASI ---
-        if "Ustaz" in text or "Ustaz" in text:
+        # --- AI USTAZ TUGMASI ---
+        if "Ustaz" in text:
             await teacher_mode_start(update, context)
-            return
-
-        # --- FOYDALI IBORALAR TUGMASI ---
-        if "Paydalı iboralar" in text or "Foydali iboralar" in text:
-            await show_useful_phrases(update, context)
             return
 
         # --- MATN TEKSHIRISH ---
@@ -265,53 +266,44 @@ async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
             return
 
+        task = TASKS[context.user_data["task"]]
+        current_task = context.user_data.get("task_name", "Noma'lum Aufgabe")
+
+        loading_msg = await update.message.reply_text(
+            f"📌 **Tańlanǵan:** {current_task}\n\n"
+            f"🔍 Tekst tekserilmekte...\n"
+            f"⏳ Iltimas, kútiń (10-20 sekund)",
+            parse_mode="Markdown",
+        )
+
+        prompt = get_schreiben_prompt(task, text)
+
+        response = await asyncio.wait_for(
+            asyncio.get_event_loop().run_in_executor(
+                None, lambda: model.generate_content(prompt)
+            ),
+            timeout=45,
+        )
+
+        await loading_msg.delete()
+        await update.message.reply_text(response.text)
+
         try:
-            task = TASKS[context.user_data["task"]]
-            current_task = context.user_data.get("task_name", "Noma'lum Aufgabe")
-
-            loading_msg = await update.message.reply_text(
-                f"📌 **Tańlanǵan:** {current_task}\n\n"
-                f"🔍 Tekst tekserilmekte...\n"
-                f"⏳ Iltimas, kútiń (10-20 sekund)",
-                parse_mode="Markdown",
-            )
-
-            prompt = get_schreiben_prompt(task, text)
-
-            response = await asyncio.wait_for(
-                asyncio.get_event_loop().run_in_executor(
-                    None, lambda: model.generate_content(prompt)
-                ),
-                timeout=45,
-            )
-
-            await loading_msg.delete()
-            await update.message.reply_text(response.text)
-
-            try:
-                log_task_check(user_id, context.user_data["task"], len(text))
-            except Exception as e:
-                logger.error(f"Log task error: {e}")
-            logger.info(
-                f"Task {context.user_data['task']} checked for user {user_id} ({username})"
-            )
-
-        except asyncio.TimeoutError:
-            await loading_msg.delete()
-            await update.message.reply_text(
-                "⏰ **Tekseriw kóp waqıt aldı.**\n\n"
-                "Tekstti qısqartırıp qayta jiberiń."
-            )
+            log_task_check(user_id, context.user_data["task"], len(text))
         except Exception as e:
-            log_error(logger, e, user_id, f"Task checking")
-            await loading_msg.delete()
-            await update.message.reply_text(
-                "❌ **Tekstti tekseriwde xátelik júz berdi.**\n\n"
-                "Qayta urınıp kóriń."
-            )
+            logger.error(f"Log task error: {e}")
 
+        logger.info(
+            f"Task {context.user_data['task']} checked for user {user_id} ({username})"
+        )
+
+    except asyncio.TimeoutError:
+        await update.message.reply_text(
+            "⏰ **Tekseriw kóp waqıt aldı.**\n\n"
+            "Tekstti qısqartırıp qayta jiberiń."
+        )
     except Exception as e:
-        log_error(logger, e, user_id, f"Text router")
+        log_error(logger, e, user_id, "Text router")
         await update.message.reply_text(
             "❌ **Kutilmegen qátelik.**\n\nIltimas, /start buyrıǵın basıń."
         )
@@ -379,6 +371,7 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 log_task_check(user_id, context.user_data["task"], 0)
             except Exception as e:
                 logger.error(f"Log photo error: {e}")
+
             logger.info(f"Photo checked for user {user_id} ({username})")
 
         except asyncio.TimeoutError:
@@ -388,7 +381,7 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "Tekstti jazba túrinde jiberiń."
             )
         except Exception as e:
-            log_error(logger, e, user_id, f"Photo checking")
+            log_error(logger, e, user_id, "Photo checking")
             await loading_msg.delete()
             await update.message.reply_text(
                 "❌ **Suwretti tekseriwde xátelik.**\n\nTekstti jazba túrinde jiberiń."
@@ -436,7 +429,7 @@ async def my_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     if stats["top_tasks"]:
-        text += f"\n🔥 **Eń kóp teksergen Aufgabe:**\n"
+        text += "\n🔥 **Eń kóp teksergen Aufgabe:**\n"
         for task in stats["top_tasks"]:
             text += f"  • Aufgabe {task['task_number']}: {task['count']} márte\n"
 
@@ -463,7 +456,9 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
     sent = 0
     failed = 0
 
-    await update.message.reply_text(f"📨 Xabar {len(users)} paydalanıwshıǵa jiberilmekte...")
+    await update.message.reply_text(
+        f"📨 Xabar {len(users)} paydalanıwshıǵa jiberilmekte..."
+    )
 
     for user in users:
         try:
@@ -473,12 +468,14 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 parse_mode="Markdown",
             )
             sent += 1
-        except:
+        except Exception:
             failed += 1
 
         await asyncio.sleep(0.05)
 
-    await update.message.reply_text(f"✅ Jiberilgen: {sent}\n❌ Jiberilmegen: {failed}")
+    await update.message.reply_text(
+        f"✅ Jiberilgen: {sent}\n❌ Jiberilmegen: {failed}"
+    )
 
 
 # ============================================
@@ -492,10 +489,10 @@ def register_schreiben_handlers(app):
     app.add_handler(CommandHandler("broadcast", broadcast))
 
     app.add_handler(
-        CallbackQueryHandler(handle_pagination, pattern="^(page_|back_to_menu)")
+        CallbackQueryHandler(handle_pagination, pattern="^(page_|back_to_menu)$")
     )
-    app.add_handler(CallbackQueryHandler(choose_task, pattern=r"^task_"))
-    app.add_handler(CallbackQueryHandler(phrases_callback_handler, pattern="^phrases_"))
+    app.add_handler(CallbackQueryHandler(choose_task, pattern=r"^task_\d+$"))
+    app.add_handler(CallbackQueryHandler(phrases_callback_handler, pattern=r"^(phrases_|back_to_phrases)"))
 
     app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, text_router))
